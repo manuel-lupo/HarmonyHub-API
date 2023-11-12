@@ -23,8 +23,3 @@ abstract class Table_model{
         return $this->table_name;
     }
 }
-models 
-
-album.model.php 
-songs.model.php 
-user.model.php 
