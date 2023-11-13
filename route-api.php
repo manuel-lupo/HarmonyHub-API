@@ -8,6 +8,9 @@ $router = new Router();
 
 // rutas
 
+$router->addRoute('albums', 'GET', 'AlbumApiController', 'getAlbums');
+$router->addRoute('songs', 'GET', 'SongsApiController', 'getSongs');
 
 //run
+
 $router->route($_GET['resource'], $_SERVER['REQUEST_METHOD']); 

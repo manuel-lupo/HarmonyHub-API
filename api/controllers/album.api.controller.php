@@ -29,4 +29,35 @@ class AlbumApiController extends TableApiController
         if (!empty($data->genre))
             $album->setGenre($data->genre);
     }
+
+    public function getAlbums($params = [])
+    {
+        $sorted_by = (!empty($_GET['sort_by']) && $this->model->columnExists($_GET['sort_by'])) ? $_GET['sort_by'] : "rel_date";
+        $order = (!empty($_GET['order']) && $_GET['order'] == 1) ? "DESC" : "ASC";
+
+        $page = !empty($_GET['page']) ? (int)$_GET['page'] : 1;
+        $per_page = !empty($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $start_index = ($page - 1) * $per_page;
+
+        $albums = $this->model->getAlbums($order, $sorted_by, $start_index, $per_page);
+
+        if ($albums) {
+            if (count($albums) !== 0)
+                $this->view->response([
+                    'data' => $albums,
+                    'status' => 'success'
+                ], 200);
+
+            //Si llega hasta este ultimo response por alguna razon la base de datos no contiene albums
+            $this->view->response([
+                'data'=> "No hay albums en nuestra base de datos",
+                "status"=> "error"
+            ], 500);  
+        }
+
+        $this->view->response([
+            "data"=> "Ha ocurrido un error y no se puede completar la busqueda",
+            "status"=> "error"
+        ], 500);
+    }
 }

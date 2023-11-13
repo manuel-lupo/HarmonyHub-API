@@ -8,4 +8,15 @@ class songs_model extends Table_model
         parent::__construct();
         $this->table_name = 'Songs';
     }
+
+    public function getSongs($query_order, $per_page, $start_index, $sorted_by)
+    {
+        $limit = intval($per_page);
+        $offset = intval($start_index);
+
+        $query = $this->db->prepare("SELECT * FROM Songs ORDER BY {$sorted_by} {$query_order} LIMIT {$limit} OFFSET {$offset}");
+        
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_CLASS, 'Song');
+    }
 }
