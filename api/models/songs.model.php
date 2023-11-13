@@ -27,4 +27,10 @@ class songs_model extends Table_model
         $query->setFetchMode(PDO::FETCH_CLASS, 'Song');
         return $query->fetch();
     }
+
+    public function deleteSong($id)
+    {
+        $query = $this->db->prepare('DELETE FROM `Songs` WHERE id = ?');
+        return $query->execute([$id]);
+    }
 }
