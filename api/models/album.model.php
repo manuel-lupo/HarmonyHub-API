@@ -50,6 +50,16 @@ class Album_model extends Table_model
             die($th);
         }
     }
+    public function deleteAlbum($id)
+    {
+        try {
+            $query = $this->db->prepare('DELETE FROM Albums WHERE id = ?');
+            $query->execute([$id]);
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
 
     public function moveTempFile($url)
     {

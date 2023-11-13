@@ -128,4 +128,34 @@ class AlbumApiController extends TableApiController
             "status" => "error"
         ], 500);
     }
+
+    public function deleteAlbum($params = [])
+    {
+        //El metodo verify token es un metodo general de los controllers usados y corta el flujo del programa en caso de encontrar un respuesta que asi lo requiera
+        $this->verifyToken();
+
+        $id = $params[':ID'];
+        if (empty($id))
+            $this->view->response([
+                'response' => "No se ha proporcionado un id",
+                "status" => "error"
+            ], 400);
+        $album = $this->model->getAlbumById($id);
+        if ($album) {
+            if ($this->model->deleteAlbum($id))
+                $this->view->response([
+                    "response" => "El album fue borrado con exito.",
+                    "status" => "success"
+                ], 200);
+            else
+                $this->view->response([
+                    "response" => "Hubo un error y no se pudo eliminar el album",
+                    "status" => "error"
+                ], 500);
+        } else
+            $this->view->response([
+                "response" => "El album con el id={$id} no existe",
+                "status" => "error"
+            ], 404);
+    }
 }
