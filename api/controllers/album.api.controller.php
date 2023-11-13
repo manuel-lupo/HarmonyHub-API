@@ -32,6 +32,8 @@ class AlbumApiController extends TableApiController
 
     public function getAlbums($params = [])
     {
+        $input = !empty($_GET["search_input"]) ? $_GET["search_input"] : "";
+        $min_rating = !empty($_GET["min_rating"]) ? (float)$_GET["min_rating"] : 0;
         $sorted_by = (!empty($_GET['sort_by']) && $this->model->columnExists($_GET['sort_by'])) ? $_GET['sort_by'] : "rel_date";
         $order = (!empty($_GET['order']) && $_GET['order'] == 1) ? "DESC" : "ASC";
 
@@ -39,7 +41,7 @@ class AlbumApiController extends TableApiController
         $per_page = !empty($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
         $start_index = ($page - 1) * $per_page;
 
-        $albums = $this->model->getAlbums($order, $sorted_by, $start_index, $per_page);
+        $albums = $this->model->getAlbums($min_rating, $input, $order, $sorted_by, $start_index, $per_page);
 
         if ($albums) {
             if (count($albums) !== 0)
@@ -48,16 +50,23 @@ class AlbumApiController extends TableApiController
                     'status' => 'success'
                 ], 200);
 
+            //Si el arreglo esta vacio y se indico un input de busqueda no se encontro un album que coincida con el mismo
+            if ($input !== "")
+                $this->view->response([
+                    'data' => "No se encontraron resultados con la búsqueda de: {$input}",
+                    "status" => "error"
+                ], 404);
+
             //Si llega hasta este ultimo response por alguna razon la base de datos no contiene albums
             $this->view->response([
-                'data'=> "No hay albums en nuestra base de datos",
-                "status"=> "error"
-            ], 500);  
+                'data' => "No hay albums en nuestra base de datos",
+                "status" => "error"
+            ], 500);
         }
 
         $this->view->response([
-            "data"=> "Ha ocurrido un error y no se puede completar la busqueda",
-            "status"=> "error"
+            "data" => "Ha ocurrido un error y no se puede completar la busqueda",
+            "status" => "error"
         ], 500);
     }
 }

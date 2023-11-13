@@ -13,7 +13,8 @@ class songsApiController extends TableApiController
     }
 
     function getSongs($params = [])
-    {
+    {   
+        $input = !empty($_GET["search_input"]) ? $_GET["search_input"] : "";
         $order = (!empty($_GET['order']) && $_GET['order'] == 1) ? "DESC" : "ASC";
         $sorted_by = (!empty($_GET['sort_by']) && $this->model->columnExists($_GET['sort_by'])) ? $_GET['sort_by'] : "album_id";
 
@@ -22,7 +23,7 @@ class songsApiController extends TableApiController
         $per_page = !empty($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
         $start_index = ($page - 1) * $per_page;
 
-        $songs = $this->model->getSongs($order, $per_page, $start_index, $sorted_by);
+        $songs = $this->model->getSongs($input, $order, $per_page, $start_index, $sorted_by);
 
         if($songs){
             $this->view->response([

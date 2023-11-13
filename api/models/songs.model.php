@@ -9,14 +9,14 @@ class songs_model extends Table_model
         $this->table_name = 'Songs';
     }
 
-    public function getSongs($query_order, $per_page, $start_index, $sorted_by)
+    public function getSongs($input, $query_order, $per_page, $start_index, $sorted_by)
     {
         $limit = intval($per_page);
         $offset = intval($start_index);
 
-        $query = $this->db->prepare("SELECT * FROM Songs ORDER BY {$sorted_by} {$query_order} LIMIT {$limit} OFFSET {$offset}");
+        $query = $this->db->prepare("SELECT * FROM Songs WHERE title LIKE ? ORDER BY {$sorted_by} {$query_order} LIMIT {$limit} OFFSET {$offset}");
         
-        $query->execute();
+        $query->execute(["%$input%"]);
         return $query->fetchAll(PDO::FETCH_CLASS, 'Song');
     }
 }
