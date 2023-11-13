@@ -34,4 +34,10 @@ class songs_model extends Table_model
         $query->execute([$song->title, $song->rel_date, $song->album_id, $song->lyrics]);
         return $this->db->lastInsertId();
     }
+    
+    public function deleteSong($id)
+    {
+        $query = $this->db->prepare('DELETE FROM `Songs` WHERE id = ?');
+        return $query->execute([$id]);
+    }
 }

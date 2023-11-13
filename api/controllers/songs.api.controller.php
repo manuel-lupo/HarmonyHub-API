@@ -91,4 +91,34 @@ class songsApiController extends TableApiController
                 'status' => 'error'
             ], 500);
     }
+    
+    public function deleteSong($params = [])
+    {
+        $this->verifyToken();
+
+        $song_id = $params[':ID'];
+        if (empty($song_id)) {
+            $this->view->response([
+                'data' => 'no se ingresó un id',
+                'status' => 'error'
+            ], 400);
+        }
+        $song = $this->model->getSongById($song_id);
+        if ($song) {
+            if ($this->model->deleteSong($song_id)) {
+                $this->view->response([
+                    'data' => "la canción con id= $song_id se eliminó con éxito",
+                    'status' => 'success'
+                ], 200);
+            } else
+                $this->view->response([
+                    'data' => 'la canción no se pudo eliminar',
+                    'status' => 'error'
+                ], 500);
+        } else
+            $this->view->response([
+                'data' => "la canción con id= $song_id no existe",
+                'status' => 'error'
+            ], 404);
+    }
 }
