@@ -27,4 +27,11 @@ class songs_model extends Table_model
         $query->setFetchMode(PDO::FETCH_CLASS, 'Song');
         return $query->fetch();
     }
+
+    public function addSong($song)
+    {
+        $query = $this->db->prepare('INSERT INTO `Songs`(`title`, `rel_date`, `album_id`, `lyrics`) VALUES (?,?,?,?)');
+        $query->execute([$song->title, $song->rel_date, $song->album_id, $song->lyrics]);
+        return $this->db->lastInsertId();
+    }
 }

@@ -91,4 +91,41 @@ class AlbumApiController extends TableApiController
             "status" => "error"
         ], 404);
     }
+
+    public function addAlbum($params = [])
+    {
+
+        $this->verifyToken();
+        $data = $this->getData();
+
+        if (empty($data->title) or empty($data->artist) or empty($data->rating))
+            $this->view->response([
+                'response' => "Falto ingresar algun dato",
+                "status" => "error"
+            ], 400);
+
+        $album = new Album();
+        $album->setValues(
+            $data->title,
+            (!empty($data->rel_date)) ? $data->rel_date : null,
+            (!empty($data->review)) ? $data->review : null,
+            $data->artist,
+            (!empty($data->genre)) ? $data->genre : null,
+            (!empty($data->rating)) ? $data->rating : null,
+            $data->img_url
+        );
+        $id = $this->model->createAlbum($album);
+
+        $album = $this->model->getAlbumById($id);
+        if ($album)
+            $this->view->response([
+                'data' => $album,
+                'status' => 'success'
+            ], 201);
+        else
+        $this->view->response([
+            "response" => "Hubo un error y no se pudo añadir el album",
+            "status" => "error"
+        ], 500);
+    }
 }

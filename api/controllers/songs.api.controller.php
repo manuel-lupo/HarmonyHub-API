@@ -62,4 +62,33 @@ class songsApiController extends TableApiController
 
         $this->view->response($song, 200);
     }
+
+    public function addSong($params = [])
+    {
+        $this->verifyToken();
+
+        $data = $this->getData();
+        if (empty($data->title) || empty($data->album_id)) {
+            $this->view->response([
+                'data' => 'faltó introducir algun campo',
+                'status' => 'error'
+            ], 400);
+        }
+        $song = new song();
+        $song->setValues($data->title, $data->rel_date, $data->album_id, $data->lyrics);
+
+        $song_id = $this->model->addSong($song);
+        $added_song = $this->model->getSongById($song_id);
+
+        if ($added_song) {
+            $this->view->response([
+                'data' => $added_song,
+                'status' => 'success'
+            ], 200);
+        } else
+            $this->view->response([
+                'data' => "La canción no fué creada",
+                'status' => 'error'
+            ], 500);
+    }
 }

@@ -30,4 +30,34 @@ class Album_model extends Table_model
         $query->execute([$id]);
         return $query->fetch();
     }
+    public function createAlbum($album)
+    {
+        try {
+            $query = $this->db->prepare("INSERT INTO `Albums`(`title`, `rel_date`, `review`, `artist`, `genre`, `rating`, `img_url`) VALUES (?,?,?,?,?,?,?)");
+            $query->execute(
+                [
+                    $album->getTitle(),
+                    (!empty($album->getRel_date())) ? $album->getRel_date() : null,
+                    (!empty($album->getReview())) ? $album->getReview() : null,
+                    $album->getArtist(),
+                    (!empty($album->getGenre())) ? $album->getGenre() : null,
+                    (!empty($album->getRating())) ? $album->getRating() : null,
+                    $this->moveTempFile($album->getImgUrl())
+                ]
+            );
+            return $this->db->lastInsertId();
+        } catch (\Throwable $th) {
+            die($th);
+        }
+    }
+
+    public function moveTempFile($url)
+    {
+        if (!empty($url)) {
+            $filePath = "img/covers/album_cover_" . uniqid("", true) . "."
+                . strtolower(pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION));
+            move_uploaded_file($url, $filePath);
+            return $filePath;
+        } else return " ";
+    }
 }
