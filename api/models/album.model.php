@@ -61,6 +61,23 @@ class Album_model extends Table_model
         }
     }
 
+    public function updateAlbum($id, Album $album, $parseUrl = null)
+    {
+        if (empty($parseUrl)) $parseUrl = FALSE;
+        $img_url = ($parseUrl) ? $this->moveTempFile($album->getImgUrl()) : $album->getImgUrl();
+        $query = $this->db->prepare('UPDATE `Albums` SET `title`= ?,`rel_date`=?,`review`=?,`artist`=?,`genre`=?,`rating`=? , `img_url` = ? WHERE id = ?');
+        return $query->execute([
+            $album->getTitle(),
+            $album->getRel_date(),
+            $album->getReview(),
+            $album->getArtist(),
+            $album->getGenre(),
+            $album->getRating(),
+            $img_url,
+            $id
+        ]);
+    }
+
     public function moveTempFile($url)
     {
         if (!empty($url)) {

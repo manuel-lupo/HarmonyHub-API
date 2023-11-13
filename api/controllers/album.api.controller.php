@@ -49,34 +49,35 @@ class AlbumApiController extends TableApiController
                     'data' => $albums,
                     'status' => 'success'
                 ], 200);
-
+            
             //Si el arreglo esta vacio y se indico un input de busqueda no se encontro un album que coincida con el mismo
-            if ($input !== "")
+            if($input !== "")
                 $this->view->response([
-                    'data' => "No se encontraron resultados con la búsqueda de: {$input}",
-                    "status" => "error"
+                    'data'=> "No se encontraron resultados con la búsqueda de: {$input}",
+                    "status"=> "error"
                 ], 404);
 
             //Si llega hasta este ultimo response por alguna razon la base de datos no contiene albums
             $this->view->response([
-                'data' => "No hay albums en nuestra base de datos",
-                "status" => "error"
-            ], 500);
+                'data'=> "No hay albums en nuestra base de datos",
+                "status"=> "error"
+            ], 500);  
         }
 
         $this->view->response([
-            "data" => "Ha ocurrido un error y no se puede completar la busqueda",
-            "status" => "error"
+            "data"=> "Ha ocurrido un error y no se puede completar la busqueda",
+            "status"=> "error"
         ], 500);
     }
+
 
     public function getAlbum($params = [])
     {
         $id = $params[':ID'];
         if (empty($id))
             $this->view->response([
-                'data' => 'No se ha proporcionado un id',
-                'status' => 'error'
+                'data'=> 'No se ha proporcionado un id',
+                'status'=> 'error'
             ], 400);
 
         $album = $this->model->getAlbumById($id);
@@ -85,11 +86,41 @@ class AlbumApiController extends TableApiController
                 'data' => $album,
                 'status' => 'success'
             ], 200);
+        else
+            $this->view->response([
+                "response" => "El album con el id={$id} no existe",
+                "status" => "error"
+            ], 404);
+    }
 
-        $this->view->response([
-            "response" => "El album con el id={$id} no existe",
-            "status" => "error"
-        ], 404);
+    public function deleteAlbum($params = [])
+    {
+        //El metodo verify token es un metodo general de los controllers usados y corta el flujo del programa en caso de encontrar un respuesta que asi lo requiera
+        $this->verifyToken();
+
+        $id = $params[':ID'];
+        if (empty($id))
+            $this->view->response([
+                'response' => "No se ha proporcionado un id",
+                "status" => "error"
+            ], 400);
+        $album = $this->model->getAlbumById($id);
+        if ($album) {
+            if ($this->model->deleteAlbum($id))
+                $this->view->response([
+                    "response" => "El album fue borrado con exito.",
+                    "status" => "success"
+                ], 200);
+            else
+                $this->view->response([
+                    "response" => "Hubo un error y no se pudo eliminar el album",
+                    "status" => "error"
+                ], 500);
+        } else
+            $this->view->response([
+                "response" => "El album con el id={$id} no existe",
+                "status" => "error"
+            ], 404);
     }
 
     public function addAlbum($params = [])
@@ -129,33 +160,43 @@ class AlbumApiController extends TableApiController
         ], 500);
     }
 
-    public function deleteAlbum($params = [])
+    public function updateAlbum($params = [])
     {
-        //El metodo verify token es un metodo general de los controllers usados y corta el flujo del programa en caso de encontrar un respuesta que asi lo requiera
-        $this->verifyToken();
 
+        $this->verifyToken();
         $id = $params[':ID'];
         if (empty($id))
             $this->view->response([
                 'response' => "No se ha proporcionado un id",
                 "status" => "error"
             ], 400);
+
+        $data = $this->getData();
+        if (empty($data->title) or empty($data->artist) or empty($data->rating))
+        $this->view->response([
+            'response' => "Falto ingresar algun dato",
+            "status" => "error"
+        ], 400);
         $album = $this->model->getAlbumById($id);
+
         if ($album) {
-            if ($this->model->deleteAlbum($id))
+            $this->getDataInAlbum($album, $data);
+            if ($this->model->updateAlbum($id, $album))
                 $this->view->response([
-                    "response" => "El album fue borrado con exito.",
-                    "status" => "success"
+                    'data' => $album,
+                    'status' => 'success'
                 ], 200);
             else
                 $this->view->response([
-                    "response" => "Hubo un error y no se pudo eliminar el album",
+                    "response" => 'Ha ocurrido un error y no se pudo actualizar el album',
                     "status" => "error"
                 ], 500);
-        } else
-            $this->view->response([
-                "response" => "El album con el id={$id} no existe",
-                "status" => "error"
-            ], 404);
+            return;
+        }
+
+        $this->view->response([
+            "response" => "El album con el id={$id} no existe",
+            "status" => "error"
+        ], 404);
     }
 }

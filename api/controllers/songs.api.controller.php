@@ -3,13 +3,25 @@ require_once './api/models/songs.model.php';
 require_once './api/controller/table.api.controller.php';
 require_once './api/views/json.view.php';
 
-class songsApiController extends TableApiController
+class SongsApiController extends TableApiController
 {
 
     public function __construct()
     {
         parent::__construct();
         $this->model = new songs_model();
+    }
+
+    private function getSongData($song, $data)
+    {
+        if (!empty($data->title))
+            $song->setTitle($data->title);
+        if (!empty($data->rel_date))
+            $song->setRel_date($data->rel_date);
+        if (!empty($data->album_id))
+            $song->setAlbum_id($data->album_id);
+        if (!empty($data->lyrics))
+            $song->setlyrics($data->lyrics);
     }
 
     function getSongs($params = [])
@@ -90,6 +102,51 @@ class songsApiController extends TableApiController
                 'data' => "La canción no fué creada",
                 'status' => 'error'
             ], 500);
+    }
+
+    public function updateSong($params = [])
+    {
+        $this->verifyToken();
+
+        $id = $params[':ID'];
+
+        if (empty($id)) {
+            $this->view->response([
+                'data' => 'no se proporcionó una cancion',
+                'status' => 'error'
+            ], 400);
+        }
+
+        $data = $this->getData();
+
+        if (empty($data->title) || empty($data->album_id)) {
+            $this->view->response([
+                'data' => 'faltó introducir algun campo',
+                'status' => 'error'
+            ], 400);
+
+            $song = $this->model->getSongById($id);
+
+            if ($id) {
+                $this->getSongData($song, $data);
+                if ($this->model->updateSong($id, $song)) {
+                    $this->view->response([
+                        'data' => 'la canción fue modificada con éxito',
+                        'status' => 'success'
+                    ], 200);
+                } else {
+                    $this->view->response([
+                        'data' => 'ocurrio un error al modificar la cancion',
+                        'status' => 'error'
+                    ], 500);
+                }
+                return;
+            }
+            $this->view->response([
+                'data' => 'la cancion que se quiere modificar no existe',
+                'status' => 'error'
+            ], 500);
+        }
     }
     
     public function deleteSong($params = [])
