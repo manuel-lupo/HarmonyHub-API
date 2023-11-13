@@ -19,4 +19,12 @@ class songs_model extends Table_model
         $query->execute(["%$input%"]);
         return $query->fetchAll(PDO::FETCH_CLASS, 'Song');
     }
+
+    public function getSongById($id)
+    {
+        $query = $this->db->prepare('SELECT * FROM Songs WHERE id= ?');
+        $query->execute([$id]);
+        $query->setFetchMode(PDO::FETCH_CLASS, 'Song');
+        return $query->fetch();
+    }
 }

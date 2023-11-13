@@ -22,4 +22,12 @@ class Album_model extends Table_model
 
         return $query->fetchAll(PDO::FETCH_CLASS, 'Album');
     }
+
+    public function getAlbumById($id)
+    {
+        $query = $this->db->prepare('SELECT * FROM Albums WHERE id = ?');
+        $query->setFetchMode(PDO::FETCH_CLASS, 'Album');
+        $query->execute([$id]);
+        return $query->fetch();
+    }
 }

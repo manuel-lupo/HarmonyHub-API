@@ -10,6 +10,10 @@ $router = new Router();
 
 $router->addRoute('albums', 'GET', 'AlbumApiController', 'getAlbums');
 $router->addRoute('songs', 'GET', 'SongsApiController', 'getSongs');
+$router->addRoute("albums/:ID" , "GET" , "AlbumApiController", "getAlbum");
+$router->addRoute("songs/:ID", "GET", "songsApiController", "getSong");
+
+
 
 //run
 

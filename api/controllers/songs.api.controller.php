@@ -13,7 +13,7 @@ class songsApiController extends TableApiController
     }
 
     function getSongs($params = [])
-    {   
+    {
         $input = !empty($_GET["search_input"]) ? $_GET["search_input"] : "";
         $order = (!empty($_GET['order']) && $_GET['order'] == 1) ? "DESC" : "ASC";
         $sorted_by = (!empty($_GET['sort_by']) && $this->model->columnExists($_GET['sort_by'])) ? $_GET['sort_by'] : "album_id";
@@ -25,14 +25,41 @@ class songsApiController extends TableApiController
 
         $songs = $this->model->getSongs($input, $order, $per_page, $start_index, $sorted_by);
 
-        if($songs){
+        if ($songs) {
             $this->view->response([
                 'data' => $songs,
-                'status' => 'success'], 200);
+                'status' => 'success'
+            ], 200);
         }
         $this->view->response([
             'data' => 'la canción no existe',
-            'status' => 'error'], 404);
+            'status' => 'error'
+        ], 404);
     }
 
+    function getSong($params = [])
+    {
+        $id = $params[":ID"];
+
+        if (empty($id))
+            $this->view->response([
+                'data' => "no se proporcionó un id",
+                'status' => "error"
+            ], 400);
+
+        $song = $this->model->getSongById($id);
+
+        if ($song)
+            $this->view->response([
+                'data' => $song,
+                'status' => 'success',
+            ], 200);
+
+        $this->view->response([
+            'data' => 'la canción solicitada no existe',
+            'status' => 'error'
+        ], 404);
+
+        $this->view->response($song, 200);
+    }
 }

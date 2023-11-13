@@ -69,4 +69,26 @@ class AlbumApiController extends TableApiController
             "status" => "error"
         ], 500);
     }
+
+    public function getAlbum($params = [])
+    {
+        $id = $params[':ID'];
+        if (empty($id))
+            $this->view->response([
+                'data' => 'No se ha proporcionado un id',
+                'status' => 'error'
+            ], 400);
+
+        $album = $this->model->getAlbumById($id);
+        if ($album)
+            $this->view->response([
+                'data' => $album,
+                'status' => 'success'
+            ], 200);
+
+        $this->view->response([
+            "response" => "El album con el id={$id} no existe",
+            "status" => "error"
+        ], 404);
+    }
 }
