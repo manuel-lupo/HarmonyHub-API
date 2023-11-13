@@ -128,4 +128,44 @@ class AlbumApiController extends TableApiController
             "status" => "error"
         ], 500);
     }
+
+    public function updateAlbum($params = [])
+    {
+
+        $this->verifyToken();
+        $id = $params[':ID'];
+        if (empty($id))
+            $this->view->response([
+                'response' => "No se ha proporcionado un id",
+                "status" => "error"
+            ], 400);
+
+        $data = $this->getData();
+        if (empty($data->title) or empty($data->artist) or empty($data->rating))
+        $this->view->response([
+            'response' => "Falto ingresar algun dato",
+            "status" => "error"
+        ], 400);
+        $album = $this->model->getAlbumById($id);
+
+        if ($album) {
+            $this->getDataInAlbum($album, $data);
+            if ($this->model->updateAlbum($id, $album))
+                $this->view->response([
+                    'data' => $album,
+                    'status' => 'success'
+                ], 200);
+            else
+                $this->view->response([
+                    "response" => 'Ha ocurrido un error y no se pudo actualizar el album',
+                    "status" => "error"
+                ], 500);
+            return;
+        }
+
+        $this->view->response([
+            "response" => "El album con el id={$id} no existe",
+            "status" => "error"
+        ], 404);
+    }
 }
