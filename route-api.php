@@ -8,6 +8,8 @@ $router = new Router();
 
 // rutas
 
+$router->addRoute("auth", "POST", "AuthApiController", "login");
+
 $router->addRoute('albums', 'GET', 'AlbumApiController', 'getAlbums');
 $router->addRoute('songs', 'GET', 'SongsApiController', 'getSongs');
 $router->addRoute("albums/:ID" , "GET" , "AlbumApiController", "getAlbum");
