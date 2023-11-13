@@ -1,6 +1,6 @@
 <?php
 require_once("./api/models/album.model.php");
-require_once("./api/controller/table.api.controller.php");
+require_once("./api/controllers/table.api.controller.php");
 require_once("./api/views/json.view.php");
 
 class AlbumApiController extends TableApiController

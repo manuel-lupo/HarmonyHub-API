@@ -1,9 +1,10 @@
 <?php
-require_once('./objects/Router.php');
+try {
+    require_once('./objects/Router.php');
 require_once('./api/config.php');
-require_once('./api/controller/album.api.controller.php');
-require_once ('./api/controller/song.api.controller.php');
-require_once "./api/controller/auth.api.controller.php";
+require_once('./api/controllers/album.api.controller.php');
+require_once ('./api/controllers/songs.api.controller.php');
+require_once "./api/controllers/auth.api.controller.php";
 
 // CONSTANTES PARA RUTEO
 define("BASE_URL", 'http://'.$_SERVER["SERVER_NAME"].':'.$_SERVER["SERVER_PORT"].dirname($_SERVER["PHP_SELF"]).'/');
@@ -30,3 +31,7 @@ $router->addRoute("albums/:ID" , "DELETE" , "AlbumApiController", "deleteAlbum")
 //run
 
 $router->route($_GET['resource'], $_SERVER['REQUEST_METHOD']); 
+
+} catch (\Throwable $th) {
+    die($th);
+}

@@ -1,5 +1,5 @@
 <?php
-require_once "./api/controller/table.api.controller.php";
+require_once "./api/controllers/table.api.controller.php";
 require_once "./api/helpers/token.helper.php";
 require_once "./api/models/user.model.php";
 
